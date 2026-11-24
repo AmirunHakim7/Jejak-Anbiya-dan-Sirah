@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ms" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0F4C3A" id="meta-theme-color" />
+  <meta name="description" content="Jejak Anbiya &amp; Sirah — Aplikasi pendidikan Islam interaktif dalam Bahasa Melayu: Garis Masa Sirah Nabawiyah, Biodata 25 Nabi &amp; Rasul, Pokok Salasilah Interaktif, dan Pustaka Doa Para Nabi." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Jejak Anbiya" />
+  <title>Jejak Anbiya &amp; Sirah — Ensiklopedia Interaktif Islam</title>
+
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="./icons/icon-192.svg" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.svg" />
+
+  <!-- Typography: Playfair Display (Editorial Serif), Amiri (Arabic Calligraphic), Plus Jakarta Sans (Clean UI) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Leaflet.js Map Styles (Zero API Keys Required) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+
+  <!-- Main Editorial Design System -->
+  <link rel="stylesheet" href="./src/styles/main.css" />
+
+  <!-- Prevent dark-mode flash before paint -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('jejak_theme');
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = saved || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <!-- Sticky Top Navbar (Full nav on desktop, compact brand + theme toggle on mobile) -->
+  <header class="top-nav" role="banner">
+    <div class="top-nav-inner">
+      <a href="#sirah" class="brand" id="brand-home" aria-label="Jejak Anbiya & Sirah — Laman Utama">
+        <span class="brand-emblem" aria-hidden="true">
+          <svg viewBox="0 0 40 40" width="32" height="32">
+            <rect x="6" y="6" width="28" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="1.6" />
+            <rect x="6" y="6" width="28" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="1.6" transform="rotate(45 20 20)" />
+            <circle cx="20" cy="20" r="4" fill="#C5A059" />
+          </svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-title">Jejak Anbiya &amp; Sirah</span>
+          <span class="brand-subtitle">Khazanah Sejarah &amp; Wahyu</span>
+        </span>
+      </a>
+
+      <!-- Desktop Navigation Tabs -->
+      <nav class="desktop-nav" aria-label="Navigasi Utama">
+        <button class="nav-pill is-active" data-tab="sirah" aria-controls="panel-sirah" aria-selected="true">
+          <i data-lucide="compass" class="icon-sm"></i>
+          <span>Sirah</span>
+        </button>
+        <button class="nav-pill" data-tab="nabi" aria-controls="panel-nabi" aria-selected="false">
+          <i data-lucide="book-open" class="icon-sm"></i>
+          <span>25 Nabi</span>
+        </button>
+        <button class="nav-pill" data-tab="salasilah" aria-controls="panel-salasilah" aria-selected="false">
+          <i data-lucide="git-branch" class="icon-sm"></i>
+          <span>Salasilah</span>
+        </button>
+        <button class="nav-pill" data-tab="doa" aria-controls="panel-doa" aria-selected="false">
+          <i data-lucide="sparkles" class="icon-sm"></i>
+          <span>Doa Anbiya</span>
+        </button>
+      </nav>
+
+      <!-- Header Utilities -->
+      <div class="nav-actions">
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Tukar Mod Gelap atau Terang" title="Tukar Mod Gelap / Terang">
+          <i data-lucide="moon" class="icon-sm theme-icon-moon"></i>
+          <i data-lucide="sun" class="icon-sm theme-icon-sun"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="app-main" id="app-main">
+    <!-- TAB 1: GARIS MASA SIRAH -->
+    <section id="panel-sirah" class="tab-panel is-active" role="tabpanel" aria-labelledby="tab-sirah">
+      <div class="page-header">
+        <div class="page-header-copy">
+          <span class="eyebrow">Sirah Nabawiyah · 570 M – 632 M</span>
+          <h1 class="page-title">Garis Masa Sirah Rasulullah SAW</h1>
+          <p class="page-lead">Telusuri perjalanan dakwah Baginda SAW secara kronologi bersama peta interaktif lokasi bersejarah dan kaitan wahyu.</p>
+        </div>
+
+        <!-- Reading Progress Card -->
+        <div class="progress-card" id="sirah-progress-card">
+          <div class="progress-header">
+            <span class="progress-label">
+              <i data-lucide="bookmark-check" class="icon-xs"></i>
+              Kemajuan Bacaan
+            </span>
+            <span class="progress-count" id="sirah-progress-text">0/18 Peristiwa Dibaca</span>
+          </div>
+          <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="18" aria-valuenow="0" id="sirah-progress-bar-wrap">
+            <div class="progress-fill" id="sirah-progress-fill" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter & Mobile View Switcher Bar -->
+      <div class="control-strip">
+        <div class="filter-group" role="group" aria-label="Tapis mengikut fasa">
+          <span class="filter-caption">Fasa:</span>
+          <div class="pill-scroll" id="sirah-phase-filters">
+            <button class="filter-pill is-active" data-phase="Semua">Semua Fasa</button>
+            <button class="filter-pill" data-phase="Sebelum Kenabian">Sebelum Kenabian</button>
+            <button class="filter-pill" data-phase="Fasa Mekah">Fasa Mekah</button>
+            <button class="filter-pill" data-phase="Fasa Madinah">Fasa Madinah</button>
+          </div>
+        </div>
+
+        <div class="filter-group" role="group" aria-label="Tapis mengikut kategori">
+          <span class="filter-caption">Kategori:</span>
+          <div class="pill-scroll" id="sirah-category-filters">
+            <button class="filter-pill is-active" data-category="Semua">Semua</button>
+            <button class="filter-pill" data-category="Wahyu">Wahyu</button>
+            <button class="filter-pill" data-category="Hijrah">Hijrah</button>
+            <button class="filter-pill" data-category="Ghazwah">Ghazwah</button>
+            <button class="filter-pill" data-category="Diplomasi">Diplomasi</button>
+          </div>
+        </div>
+
+        <!-- Mobile Toggle: Timeline vs Map -->
+        <div class="mobile-view-toggle" role="tablist" aria-label="Paparan Sirah">
+          <button class="segmented-btn is-active" data-sirah-mobile="timeline" role="tab" aria-selected="true">
+            <i data-lucide="list" class="icon-xs"></i>
+            Garis Masa
+          </button>
+          <button class="segmented-btn" data-sirah-mobile="map" role="tab" aria-selected="false">
+            <i data-lucide="map-pin" class="icon-xs"></i>
+            Peta Lokasi
+          </button>
+        </div>
+      </div>
+
+      <!-- Split-View Container (Timeline Left, Sticky Map Right on Desktop) -->
+      <div class="sirah-split" id="sirah-split" data-mobile-view="timeline">
+        <div class="sirah-timeline-col" id="sirah-timeline-list" aria-live="polite">
+          <!-- Populated by src/js/sirahView.js -->
+        </div>
+
+        <aside class="sirah-map-col" aria-label="Peta Bersejarah Sirah">
+          <div class="map-frame">
+            <div class="map-header-bar">
+              <div class="map-location-badge">
+                <i data-lucide="map-pin" class="icon-xs text-gold"></i>
+                <span id="sirah-active-location">Mekah al-Mukarramah</span>
+              </div>
+              <button class="map-reset-btn" id="sirah-map-fit" type="button" title="Lihat Semua Lokasi">
+                <i data-lucide="maximize-2" class="icon-xs"></i>
+                <span>Semua</span>
+              </button>
+            </div>
+            <div id="sirah-map" class="leaflet-canvas"></div>
+            <div class="map-footer-caption" id="sirah-map-caption">
+              Klik mana-mana peristiwa di garis masa atau penanda di peta untuk meneroka lokasi bersejarah.
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- TAB 2: BIODATA 25 NABI & RASUL -->
+    <section id="panel-nabi" class="tab-panel" role="tabpanel" aria-labelledby="tab-nabi" hidden>
+      <div class="page-header">
+        <div class="page-header-copy">
+          <span class="eyebrow">Qisasul Anbiya · Adam a.s. – Muhammad SAW</span>
+          <h1 class="page-title">Biodata 25 Nabi &amp; Rasul</h1>
+          <p class="page-lead">Kenali 25 utusan pilihan yang wajib diketahui, lengkap dengan gelaran, kaum, mukjizat, kitab wahyu, serta rujukan surah al-Quran.</p>
+        </div>
+      </div>
+
+      <div class="nabi-toolbar">
+        <div class="search-box">
+          <i data-lucide="search" class="icon-sm search-icon"></i>
+          <input
+            type="search"
+            id="nabi-search"
+            class="search-input"
+            placeholder="Cari nama Nabi, gelaran, kaum, lokasi atau surah..."
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="pill-scroll" id="nabi-filters" role="group" aria-label="Tapis 25 Nabi">
+          <button class="filter-pill is-active" data-nabi-filter="semua">Semua (25)</button>
+          <button class="filter-pill" data-nabi-filter="ulul-azmi">
+            <span class="dot-gold" aria-hidden="true"></span>
+            Ulul Azmi (5)
+          </button>
+          <button class="filter-pill" data-nabi-filter="kitab">Penerima Kitab (4)</button>
+        </div>
+      </div>
+
+      <div class="nabi-count-bar" id="nabi-count-bar">Menunjukkan 25 daripada 25 Nabi &amp; Rasul</div>
+      <div class="nabi-grid" id="nabi-grid" aria-live="polite">
+        <!-- Populated by src/js/nabiView.js -->
+      </div>
+    </section>
+
+    <!-- TAB 3: POKOK SALASILAH INTERAKTIF -->
+    <section id="panel-salasilah" class="tab-panel" role="tabpanel" aria-labelledby="tab-salasilah" hidden>
+      <div class="page-header">
+        <div class="page-header-copy">
+          <span class="eyebrow">Nasab Mulia Para Utusan</span>
+          <h1 class="page-title">Pokok Salasilah Interaktif</h1>
+          <p class="page-lead">Susuri pertalian keturunan 25 Nabi daripada Nabi Adam a.s. hingga percabangan agung Nabi Ismail a.s. dan Nabi Ishaq a.s. Klik mana-mana nod untuk membaca biodata penuh.</p>
+        </div>
+      </div>
+
+      <div class="tree-toolbar">
+        <div class="tree-focus-pills" role="group" aria-label="Fokus cabang salasilah">
+          <button class="filter-pill is-active" id="tree-fit-all" type="button">Keseluruhan</button>
+          <button class="filter-pill" id="tree-focus-ismail" type="button">Cabang Ismail → Muhammad SAW</button>
+          <button class="filter-pill" id="tree-focus-ishaq" type="button">Cabang Ishaq → Bani Israil</button>
+        </div>
+
+        <div class="tree-zoom-controls" role="group" aria-label="Kawalan zum salasilah">
+          <button class="icon-btn-sm" id="tree-zoom-out" type="button" title="Kecilkan (Zoom Out)" aria-label="Kecilkan">
+            <i data-lucide="minus" class="icon-xs"></i>
+          </button>
+          <span class="zoom-readout" id="tree-zoom-label">100%</span>
+          <button class="icon-btn-sm" id="tree-zoom-in" type="button" title="Besarkan (Zoom In)" aria-label="Besarkan">
+            <i data-lucide="plus" class="icon-xs"></i>
+          </button>
+          <button class="icon-btn-sm" id="tree-reset" type="button" title="Set Semula Paparan" aria-label="Set semula paparan">
+            <i data-lucide="rotate-ccw" class="icon-xs"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="tree-legend">
+        <span class="legend-item"><span class="legend-swatch swatch-ulul"></span>Ulul Azmi</span>
+        <span class="legend-item"><span class="legend-swatch swatch-ismail"></span>Cabang Ismail a.s.</span>
+        <span class="legend-item"><span class="legend-swatch swatch-ishaq"></span>Cabang Ishaq a.s.</span>
+        <span class="legend-item"><span class="legend-line line-solid"></span>Hubungan Langsung</span>
+        <span class="legend-item"><span class="legend-line line-dashed"></span>Keturunan (Beberapa Generasi)</span>
+      </div>
+
+      <div class="tree-viewport" id="tree-viewport" tabindex="0" aria-label="Kanvas Pokok Salasilah 25 Nabi — seret untuk menggerakkan, klik nod untuk biodata">
+        <div class="tree-stage" id="tree-stage">
+          <svg class="tree-svg" id="tree-svg" aria-hidden="true"></svg>
+          <div class="tree-nodes" id="tree-nodes"></div>
+        </div>
+        <div class="tree-hint">
+          <i data-lucide="move" class="icon-xs"></i>
+          <span>Seret untuk meneroka · Klik nod Nabi untuk biodata</span>
+        </div>
+      </div>
+
+      <p class="scholarly-footnote">
+        <strong>Nota Sejarah:</strong> Garis putus-putus menandakan beberapa generasi antara para Nabi yang diringkaskan bagi memaparkan keseluruhan 25 Nabi dalam satu carta nasab yang jelas. Sebahagian perincian pertalian seperti nasab Nabi Zulkifli a.s. dan Nabi Ilyasa' a.s. mengikut pandangan masyhur ulama sejarah Islam (Ibn Kathir &amp; al-Tabari).
+      </p>
+    </section>
+
+    <!-- TAB 4: PUSTAKA DOA PARA NABI -->
+    <section id="panel-doa" class="tab-panel" role="tabpanel" aria-labelledby="tab-doa" hidden>
+      <div class="page-header">
+        <div class="page-header-copy">
+          <span class="eyebrow">Munajat Al-Quran · Doa Anbiya</span>
+          <h1 class="page-title">Pustaka Doa Para Nabi</h1>
+          <p class="page-lead">Himpunan doa mustajab yang dirakamkan dalam al-Quran daripada lisan para Nabi a.s., sedia untuk disalin, dihafal, dan diamalkan.</p>
+        </div>
+      </div>
+
+      <div class="doa-toolbar">
+        <div class="search-box">
+          <i data-lucide="search" class="icon-sm search-icon"></i>
+          <input
+            type="search"
+            id="doa-search"
+            class="search-input"
+            placeholder="Cari doa mengikut nama Nabi, surah atau maksud..."
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="pill-scroll" id="doa-filters" role="group" aria-label="Tapis Doa Anbiya">
+          <button class="filter-pill is-active" data-doa-filter="Semua">Semua Doa</button>
+          <button class="filter-pill" data-doa-filter="Disimpan" id="doa-saved-filter">
+            <i data-lucide="bookmark" class="icon-xs"></i>
+            <span>Disimpan (<span id="doa-saved-count">0</span>)</span>
+          </button>
+          <button class="filter-pill" data-doa-filter="Taubat">Taubat</button>
+          <button class="filter-pill" data-doa-filter="Ketabahan">Ketabahan</button>
+          <button class="filter-pill" data-doa-filter="Keluarga">Keluarga</button>
+          <button class="filter-pill" data-doa-filter="Urusan &amp; Ilmu">Urusan &amp; Ilmu</button>
+          <button class="filter-pill" data-doa-filter="Syukur">Syukur</button>
+        </div>
+      </div>
+
+      <div class="doa-grid" id="doa-grid" aria-live="polite">
+        <!-- Populated by src/js/doaView.js -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Mobile Bottom Tab Bar -->
+  <nav class="mobile-bottom-nav" aria-label="Navigasi Bawah Mudah Alih">
+    <button class="bottom-tab is-active" data-tab="sirah" aria-selected="true">
+      <i data-lucide="compass" class="icon-md"></i>
+      <span>Sirah</span>
+    </button>
+    <button class="bottom-tab" data-tab="nabi" aria-selected="false">
+      <i data-lucide="book-open" class="icon-md"></i>
+      <span>25 Nabi</span>
+    </button>
+    <button class="bottom-tab" data-tab="salasilah" aria-selected="false">
+      <i data-lucide="git-branch" class="icon-md"></i>
+      <span>Salasilah</span>
+    </button>
+    <button class="bottom-tab" data-tab="doa" aria-selected="false">
+      <i data-lucide="sparkles" class="icon-md"></i>
+      <span>Doa Anbiya</span>
+    </button>
+  </nav>
+
+  <!-- Prophet Detail Modal / Drawer -->
+  <div class="modal-backdrop" id="prophet-modal" role="dialog" aria-modal="true" aria-labelledby="modal-prophet-name" hidden>
+    <div class="modal-sheet" id="prophet-modal-sheet">
+      <div class="modal-sticky-bar">
+        <span class="modal-order-tag" id="modal-prophet-order">NABI #01</span>
+        <button class="icon-btn" id="modal-close-btn" type="button" aria-label="Tutup paparan biodata">
+          <i data-lucide="x" class="icon-sm"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="prophet-modal-body">
+        <!-- Populated dynamically by src/js/modal.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-region" aria-live="polite" aria-atomic="true">
+    <div class="toast" id="app-toast" hidden>
+      <i data-lucide="check-circle-2" class="icon-sm text-gold"></i>
+      <span id="app-toast-text">Doa berjaya disalin</span>
+    </div>
+  </div>
+
+  <!-- Libraries (Zero API Keys Required) -->
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+
+  <!-- Structured Historical Data Files -->
+  <script defer src="./src/data/sirah.js"></script>
+  <script defer src="./src/data/nabi.js"></script>
+  <script defer src="./src/data/salasilah.js"></script>
+  <script defer src="./src/data/doa.js"></script>
+
+  <!-- Application Modules -->
+  <script defer src="./src/js/storage.js"></script>
+  <script defer src="./src/js/modal.js"></script>
+  <script defer src="./src/js/sirahView.js"></script>
+  <script defer src="./src/js/nabiView.js"></script>
+  <script defer src="./src/js/salasilahView.js"></script>
+  <script defer src="./src/js/doaView.js"></script>
+  <script defer src="./src/js/app.js"></script>
+</body>
+</html>
